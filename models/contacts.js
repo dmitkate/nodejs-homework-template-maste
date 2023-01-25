@@ -2,7 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const uniqid = require('uniqid');
 
-const contactsPath = path.normalize("./models/contacts.json");
+
 
 const contacts = path.normalize("./models/contacts.json");
 
@@ -43,7 +43,7 @@ const addContact = async (body) => {
         
         const contacts = await listContacts()        
         contacts.push(addedContact)
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
+        await fs.writeFile(contacts, JSON.stringify(contacts, null, '\t'), "utf-8")
         return addedContact
     } catch (error) {
         console.log('error', error)
@@ -63,7 +63,7 @@ const updateContact = async (contactId, body) => {
             return null
         }
 
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
+        await fs.writeFile(contacts, JSON.stringify(contacts, null, '\t'), "utf-8")
         return contactFromId
     } catch (error) {
         console.log('error', error)
