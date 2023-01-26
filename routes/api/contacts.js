@@ -1,7 +1,7 @@
 const express = require('express')
 const { tryCatch} = require('../../utils/tryCatch')
 const { middleware } = require('../../middleware/middlewareValidate')
-const { validSchemaPost, validSchemaPut,validSchemaPatch } = require('../../utils/validSchema.js')
+const { validSchemaPost, validSchemaPut, validSchemaPatch } = require('../../utils/validSchema.js')
 
 const router = express.Router()
 
