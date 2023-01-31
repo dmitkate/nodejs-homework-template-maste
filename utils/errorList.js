@@ -5,17 +5,15 @@ class ValidationError extends Error {
     }
 }
 
-function ValidError(status, message) {
-    const err = new ValidationError(message);
-    err.status = status;
-    return err;
+class  HttpError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = " HttpError"
+    }
 }
-function HttpError(status, message) {
-    const err = new Error(message);
-    err.status = status;
-    return err;
-}
+
+
 module.exports = {
-    ValidError,
+    ValidationError,
     HttpError
 };
