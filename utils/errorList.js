@@ -10,7 +10,12 @@ function ValidError(status, message) {
     err.status = status;
     return err;
 }
-
+function HttpError(status, message) {
+    const err = new Error(message);
+    err.status = status;
+    return err;
+}
 module.exports = {
-    ValidError
+    ValidError,
+    HttpError
 };
