@@ -11,7 +11,7 @@ const { listContacts,
   addContact,
   updateContact,
   addStatus
-} = require('../../models/contacts');
+} = require('../../controller/contacts');
 
 module.exports = router
 

@@ -1,8 +1,4 @@
-
 const { Contacts } = require('../models/schema');
-
-
-
 
 const listContacts = async (req, res, next) => {
   const contacts = await Contacts.find({})
