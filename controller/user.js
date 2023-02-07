@@ -9,6 +9,7 @@ const { JWT_SECRET } = process.env;
 const path = require('path');
 const fs = require('fs').promises;
 const Jimp = require('jimp')
+const folder = path.join(__dirname, "../", "public", "avatars")
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
@@ -91,7 +92,7 @@ const currentUser = async (req, res, next) => {
 }
 
 
-const folder = path.join(__dirname, "../", "public", "avatars")
+
 const addAvatar = async (req, res, next) => {
     const user = await User.findById(req.user.id)
     if (!user) {
