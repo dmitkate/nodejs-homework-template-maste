@@ -20,6 +20,13 @@ const contactsSchema = mongoose.Schema  ({
     default: null,
     },
   avatarURL: String,
+  verify: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: {
+        type: String,
+    },
 })
 
 const User = mongoose.model('user', contactsSchema)
