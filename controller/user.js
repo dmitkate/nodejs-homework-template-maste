@@ -1,15 +1,17 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 dotenv.config();
+
 const { User } = require('../models/useSchema');
 const { hashedPassword, checkPassword } = require('../utils/passwordHash');
-const { ConflictError, AuthError } = require('../utils/errorList');
+const { AuthError, RegistrationConflictError, ValidationError, VerificationError } = require('../utils/errorList');
 const gravatar = require('gravatar');
 const { JWT_SECRET } = process.env;
 const path = require('path');
 const fs = require('fs').promises;
 const Jimp = require('jimp')
 const folder = path.join(__dirname, "../", "public", "avatars")
+const { sendEmail } = require('../utils/sendEmail');
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
@@ -17,7 +19,7 @@ const addUser = async (req, res, next) => {
     const createdAvatar = gravatar.url(email, {protocol: 'https', s: '400', r: 'g', d: 'identicon', f: 'y'})
     
     if (conflictUser) {
-        return (next(ConflictError(409, 'Email in use, please change it and try again')))
+        return (next(RegistrationConflictError(409, 'Email in use, please change it and try again')))
     }
 
     const user = await User.create({
@@ -127,11 +129,60 @@ const addAvatar = async (req, res, next) => {
     }    
 }
 
+const verifyUser = async (req, res, next) => {
+    const { verificationToken } = req.params
+    const user = await User.findOne({ verificationToken })
+
+    if (!user) {
+        throw new VerificationError("User not found")
+    }
+
+    const payload = { id: user._id, email: user.email }
+    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "5d"})
+
+    await User.findByIdAndUpdate(user._id, {
+        token: token,
+        verificationToken: null,
+        verify: true
+    }, { new: true })
+
+    return res.status(200).json({
+        message: 'Verification successful'
+    }) 
+}
+
+const resendVerifyEmail = async (req, res, next) => {
+    const { email } = req.query
+    const { verificationToken } = req.params
+
+    if (!email) {
+        throw new RegistrationConflictError('Missing required field email')
+    }
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        throw new VerificationError('User not found')
+    }
+
+    if (user.verify) {
+        throw new ValidationError('Verification has already been passed')
+    }
+    
+    await sendEmail(email, verificationToken)
+
+    return res.status(200).json({
+        message: 'Verification email sent',
+    })
+}
+
 
 module.exports = {
     addUser, 
     loginUser,
     logoutUser,
     currentUser,
-    addAvatar
+    addAvatar,
+    verifyUser,
+    resendVerifyEmail,
 }
